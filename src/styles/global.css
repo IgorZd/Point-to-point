@@ -1,0 +1,32 @@
+@font-face {
+  font-family: "Inter";
+  font-weight: 400;
+  src: url(../fonts/inter/Inter-Regular.otf);
+}
+@font-face {
+  font-family: "Inter";
+  font-weight: 500;
+  src: url(../fonts/inter/Inter-Medium.otf);
+}
+@font-face {
+  font-family: "Inter";
+  font-weight: 700;
+  src: url(../fonts/inter/Inter-SemiBold.otf);
+}
+@font-face {
+  font-family: "Inter";
+  font-weight: 800;
+  src: url(../fonts/inter/Inter-Bold.otf);
+}
+body {
+  margin: 0;
+  font-family: "Inter";
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-size: 16px;
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
+    monospace;
+}
