@@ -8,6 +8,7 @@ import { ReactComponent as PersonIcon } from "../../assets/user.svg";
 import { CityType, useGetCities } from "../../api/cities";
 import { getRequiredDateFormat } from "../../utils/date-format";
 import { DateModal } from "../dateModal/DateModal";
+import { CommonButton } from "../CommonButton/CommonButton";
 
 const Wrapper = styled.div`
   width: 700px;
@@ -31,6 +32,12 @@ const InputsWrapper = styled.div`
   flex-wrap: wrap;
   gap: 10px;
 `;
+const ButtonWrapper = styled.div`
+  width: 100%;
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 10px;
+`;
 
 export const ChooseRoute = () => {
   const [data, setData] = useState({
@@ -42,6 +49,12 @@ export const ChooseRoute = () => {
   });
   const [isLoadingInProcess, setIsLoadingInProcess] = useState(false);
   const [isOpenDateModal, setIsOpenDateModal] = useState(false);
+  const [validatingIsStarted, setValidatingIsStarted] = useState(false);
+  const isAllFieldsValid =
+    data.originCity.inputValue.length > 0 &&
+    data.destinationCity.inputValue.length > 0 &&
+    data.date.length > 0 &&
+    data.numberOfPassengers > 0;
 
   const inputOnChange = useCallback(
     (
@@ -83,6 +96,15 @@ export const ChooseRoute = () => {
   const cancelOnClickDateModal = () => {
     setIsOpenDateModal(false);
   };
+  const setPassengersCount = (value: number) => {
+    setData({ ...data, numberOfPassengers: value });
+  };
+  const searchOnClick = () => {
+    setValidatingIsStarted(true);
+    if (isAllFieldsValid) {
+      console.log("data: ", data);
+    }
+  };
   const inputsList = [
     {
       val: { ...data.originCity },
@@ -116,7 +138,6 @@ export const ChooseRoute = () => {
       val: data.date,
       onClick: () => {
         setIsOpenDateModal(true);
-        console.log("Date");
       },
       label: "Date",
       placeholder: "",
@@ -124,8 +145,8 @@ export const ChooseRoute = () => {
     },
     {
       val: data.numberOfPassengers,
-      onChange: (value: string) => {
-        inputOnChange(value, "numberOfPassengers");
+      onChange: (value: number) => {
+        setPassengersCount(value);
       },
       label: "Number of passengers",
       placeholder: "",
@@ -165,13 +186,25 @@ export const ChooseRoute = () => {
               icon={icon}
               searchedList={cities}
               isLoadingInProcess={isLoadingInProcess}
+              validatingIsStarted={validatingIsStarted}
               setCoordinates={(city: CityType) => {
                 setCoordinates(city, fieldName);
               }}
+              setValidatingIsStarted={setValidatingIsStarted}
             />
           );
         })}
       </InputsWrapper>
+      <ButtonWrapper>
+        <CommonButton
+          width={"168px"}
+          height={"40px"}
+          value={"SEARCH"}
+          onClick={searchOnClick}
+          backgroundColor={"rgb(246, 185, 0)"}
+          backgroundColorHover={"rgb(211, 158, 0)"}
+        />
+      </ButtonWrapper>
       <DateModal
         isOpenModal={isOpenDateModal}
         setOnClick={setOnClickDateModal}

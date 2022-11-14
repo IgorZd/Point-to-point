@@ -3,6 +3,7 @@ import styled from "@xstyled/styled-components";
 import { CloseButton } from "../closeButton/CloseButton";
 import { ReactComponent as Arrow } from "../../../../assets/arrow.svg";
 import { getRequiredDateFormat } from "../../../../utils/date-format";
+import { IncreaseDecrease } from "../../../increaseDecrease/IncreaseDecrease";
 
 const Wrapper = styled.div`
   box-shadow: ${(props: any) =>
@@ -100,6 +101,7 @@ export const Container = ({
   inputOnClick,
   inputRef,
   isLoadingInProcess,
+  isTextInput,
 }: {
   value: string;
   placeholder: string;
@@ -113,6 +115,7 @@ export const Container = ({
   inputOnClick: () => void;
   inputRef: React.MutableRefObject<any>;
   isLoadingInProcess?: boolean;
+  isTextInput?: boolean;
 }) => {
   return (
     <Wrapper isFocused={isFocused}>
@@ -152,6 +155,14 @@ export const Container = ({
               isLoadingInProcess={isLoadingInProcess && isFocused}
             />
           )}
+        {label === "Number of passengers" && (
+          <IncreaseDecrease
+            value={+value}
+            onChange={(value: number) => {
+              inputOnChange(`${value}`);
+            }}
+          />
+        )}
       </InputWrapper>
     </Wrapper>
   );

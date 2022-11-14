@@ -1,10 +1,10 @@
 // @ts-ignore
 import styled from "@xstyled/styled-components";
 import { useState } from "react";
-import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { getRequiredDateFormat } from "../../utils/date-format";
 import { Calendar } from "../calendar/Calendar";
+import { CommonButton } from "../CommonButton/CommonButton";
 import { Modal } from "../modal/Modal";
 
 const Wrapper = styled.div`
@@ -100,15 +100,14 @@ export const DateModal = ({
               onClick,
             } = item;
             return (
-              <Button
+              <CommonButton
                 key={index}
+                value={value}
                 onClick={onClick}
                 color={color}
                 backgroundColor={backgroundColor}
                 backgroundColorHover={backgroundColorHover}
-              >
-                {value}
-              </Button>
+              />
             );
           })}
         </ButtonsWrapper>

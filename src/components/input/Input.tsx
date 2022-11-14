@@ -32,38 +32,51 @@ export const Input = ({
   placeholder,
   icon,
   setCoordinates,
+  setValidatingIsStarted,
   searchedList,
   isLoadingInProcess,
+  validatingIsStarted,
 }: {
   value: string;
-  onChange: (value: string) => void;
+  onChange: (value: string | number) => void;
   onClick: () => void;
   label: string;
   placeholder: string;
   icon: any;
   setCoordinates: (city: CityType) => void;
+  setValidatingIsStarted: React.Dispatch<React.SetStateAction<boolean>>;
   searchedList?: CityType[];
+  validatingIsStarted?: boolean;
   isLoadingInProcess?: boolean;
 }) => {
   const [isFocused, setIsFocused] = useState(false);
-  const [validatingIsStarted, setValidatingIsStarted] = useState(false);
   const [isOpenSearchList, setIsOpenSearchList] = useState(false);
   const inputRef = useRef<any>(null);
   const withSearchList = searchedList && searchedList.length > 0;
+  const isTextInput = label === "Origin city" || label === "Destination city";
 
-  const inputOnChange = (value: string) => {
-    setValidatingIsStarted(true);
-    setIsOpenSearchList(true);
-    if (value.length === 0) {
-      setIsOpenSearchList(false);
+  const inputOnChange = (value: string | number) => {
+    if (isTextInput && typeof value === "string") {
+      setValidatingIsStarted(true);
+      setIsOpenSearchList(true);
+      if (value.length === 0) {
+        setIsOpenSearchList(false);
+      }
+      onChange(value);
+    } else {
+      if (value >= 0 && value <= 50) {
+        onChange(+value);
+      }
     }
-    onChange(value);
   };
   const inputOnFocus = () => {
     setIsFocused(true);
   };
   const inputOnBlur = () => {
     setIsFocused(false);
+    if (!isTextInput && +value === 0) {
+      onChange(1);
+    }
   };
   const clearInput = () => {
     onChange("");
@@ -108,8 +121,9 @@ export const Input = ({
         clearInput={clearInput}
         inputRef={inputRef}
         isLoadingInProcess={isLoadingInProcess}
+        isTextInput={isTextInput}
       />
-      {validatingIsStarted && value.length === 0 && (
+      {isTextInput && validatingIsStarted && value.length === 0 && (
         <ErrorMessageWrapper>
           <Error>
             {
