@@ -1,3 +1,11 @@
+import { useEffect, useState } from "react";
+
+export interface CityType {
+  name: string;
+  lat: number;
+  lng: number;
+}
+
 const cities = [
   { name: "Paris", lat: 48.856614, lng: 2.352222 },
   { name: "Marseille", lat: 43.296482, lng: 5.36978 },
@@ -21,12 +29,27 @@ const cities = [
   { name: "Aix-en-Provence", lat: 43.529742, lng: 5.447427 },
 ];
 
-export const useGetCities = () =>
-  // setIsLoaingInProcess: React.Dispatch<React.SetStateAction<boolean>>
-  {
-    // setIsLoaingInProcess(true);
-    // setTimeout(() => {
-    //   setIsLoaingInProcess(false);
-    return cities;
-    // }, 3000);
-  };
+export const useGetCities = (
+  value: string,
+  setIsLoadingInProcess: React.Dispatch<React.SetStateAction<boolean>>
+) => {
+  const [localData, setLocalData] = useState<any>([]);
+
+  useEffect(() => {
+    if (value.length > 0) {
+      setIsLoadingInProcess(true);
+      setTimeout(() => {
+        setIsLoadingInProcess(false);
+        const preparedValue = value.toLowerCase();
+        const filteredData = cities.filter((item: CityType) =>
+          item.name.toLowerCase().includes(preparedValue)
+        );
+        setLocalData(filteredData);
+      }, 2000);
+    } else {
+      setLocalData([]);
+    }
+  }, [setIsLoadingInProcess, value]);
+
+  return localData;
+};

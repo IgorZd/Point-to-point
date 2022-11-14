@@ -1,8 +1,8 @@
 // @ts-ignore
 import styled from "@xstyled/styled-components";
-import { useState } from "react";
-import { useGetCities } from "../../api/cities";
 import { Modal } from "../../components/modal/Modal";
+import background from "../../assets/617993f114b981224d64278eaf108e17.jpeg";
+import { useState } from "react";
 
 export const Wrapper = styled.div`
   width: 100%;
@@ -10,16 +10,14 @@ export const Wrapper = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
+  background-image: url(${(props: any) => props.background});
+  background-position: center;
+  background-size: cover;
 `;
 
 export const Main = () => {
-  const [isLoadingInProcess, setIsLoadingInProcess] = useState(false);
-  const cities = useGetCities();
-
-  console.log("cities: ", cities);
-
   return (
-    <Wrapper>
+    <Wrapper background={background}>
       <Modal />
     </Wrapper>
   );
