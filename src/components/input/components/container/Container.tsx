@@ -2,6 +2,7 @@
 import styled from "@xstyled/styled-components";
 import { CloseButton } from "../closeButton/CloseButton";
 import { ReactComponent as Arrow } from "../../../../assets/arrow.svg";
+import { getRequiredDateFormat } from "../../../../utils/date-format";
 
 const Wrapper = styled.div`
   box-shadow: ${(props: any) =>
@@ -49,6 +50,7 @@ const IconWrapper = styled.div`
   justify-content: center;
   align-items: center;
   position: absolute;
+  z-index: 1;
   & > svg {
     & > path {
       transition: all 0.3s linear;
@@ -126,7 +128,7 @@ export const Container = ({
         </IconWrapper>
         {!!inputOnClick ? (
           <DateContainer onClick={inputOnClick}>
-            <Text>{value}</Text>
+            <Text>{getRequiredDateFormat(value, "MMMM DD")}</Text>
             <ArrowIcon />
           </DateContainer>
         ) : (
