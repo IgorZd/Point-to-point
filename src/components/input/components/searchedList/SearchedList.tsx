@@ -21,6 +21,21 @@ const Wrapper = styled.ul`
   border: 1px solid;
   border-color: #ebebf0;
   transition: all 0.3s;
+  &.disabled {
+    user-select: none;
+  }
+`;
+const Layer = styled.div`
+  width: 100%;
+  height: 100%;
+  background-color: #fff;
+  opacity: 0;
+  position: absolute;
+  z-index: 1;
+  &.disabled {
+    opacity: 0.6;
+    z-index: 11;
+  }
 `;
 const SearchedItem = styled.li`
   width: 100%;
@@ -31,6 +46,8 @@ const SearchedItem = styled.li`
   cursor: pointer;
   padding: 5px;
   transition: all 0.3s linear;
+  position: relative;
+  z-index: ${(props: any) => (props.disabled ? "1" : "10")};
   &.first {
     border-radius: 4px 4px 0 0;
   }
@@ -57,14 +74,16 @@ export const SearchedList = ({
   searchedList,
   icon,
   withSearchList,
+  isLoadingInProcess,
 }: {
   searchItemOnClick: (city: CityType) => void;
   icon: () => void;
   withSearchList?: boolean;
   searchedList?: CityType[];
+  isLoadingInProcess?: boolean;
 }) => {
   return (
-    <Wrapper>
+    <Wrapper className={isLoadingInProcess ? "disabled" : ""}>
       {withSearchList ? (
         searchedList?.map((item: any, index: number) => {
           return (
@@ -79,6 +98,7 @@ export const SearchedList = ({
                   ? "last"
                   : ""
               }
+              disabled={isLoadingInProcess}
               onClick={(e: any) => {
                 e.stopPropagation();
                 searchItemOnClick(item);
@@ -92,6 +112,7 @@ export const SearchedList = ({
       ) : (
         <Text className={"no_data"}>No Data</Text>
       )}
+      <Layer className={isLoadingInProcess ? "disabled" : ""} />
     </Wrapper>
   );
 };

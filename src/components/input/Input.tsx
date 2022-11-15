@@ -23,6 +23,28 @@ const Error = styled.span`
   color: rgb(211, 158, 0);
   font-size: 12px;
 `;
+const RemoveButton = styled.button`
+  width: 16px;
+  height: 16px;
+  border: none;
+  cursor: pointer;
+  border-radius: 50%;
+  position: absolute;
+  right: -8px;
+  top: -8px;
+  font-size: 9px;
+  font-weight: 600;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #ffff;
+  color: rgb(55, 131, 197);
+  transition: all 0.3s linear;
+  &:hover {
+    box-shadow: rgb(33 33 33) 0px 0px 6px -1px;
+  }
+`;
 
 export const Input = ({
   value,
@@ -33,6 +55,7 @@ export const Input = ({
   icon,
   setCoordinates,
   setValidatingIsStarted,
+  removeCity,
   searchedList,
   isLoadingInProcess,
   validatingIsStarted,
@@ -45,6 +68,7 @@ export const Input = ({
   icon: any;
   setCoordinates: (city: CityType) => void;
   setValidatingIsStarted: React.Dispatch<React.SetStateAction<boolean>>;
+  removeCity: () => void;
   searchedList?: CityType[];
   validatingIsStarted?: boolean;
   isLoadingInProcess?: boolean;
@@ -53,7 +77,10 @@ export const Input = ({
   const [isOpenSearchList, setIsOpenSearchList] = useState(false);
   const inputRef = useRef<any>(null);
   const withSearchList = searchedList && searchedList.length > 0;
-  const isTextInput = label === "Origin city" || label === "Destination city";
+  const isTextInput =
+    label === "Origin city" ||
+    label === "Destination city" ||
+    label === "Intermediate city";
 
   const inputOnChange = (value: string | number) => {
     if (isTextInput && typeof value === "string") {
@@ -137,9 +164,11 @@ export const Input = ({
           searchItemOnClick={searchItemOnClick}
           withSearchList={withSearchList}
           searchedList={searchedList}
+          isLoadingInProcess={isLoadingInProcess}
           icon={icon}
         />
       )}
+      {!!removeCity && <RemoveButton onClick={removeCity}>X</RemoveButton>}
     </Wrapper>
   );
 };

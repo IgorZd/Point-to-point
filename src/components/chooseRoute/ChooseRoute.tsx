@@ -1,6 +1,6 @@
 // @ts-ignore
 import styled from "@xstyled/styled-components";
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Input } from "../input/Input";
 import { ReactComponent as LocationIcon } from "../../assets/Location.svg";
 import { ReactComponent as DateIcon } from "../../assets/Calendar.svg";
@@ -9,6 +9,7 @@ import { CityType, useGetCities } from "../../api/cities";
 import { getRequiredDateFormat } from "../../utils/date-format";
 import { DateModal } from "../dateModal/DateModal";
 import { CommonButton } from "../CommonButton/CommonButton";
+import { ReactComponent as AddIcon } from "../../assets/Add.svg";
 
 const Wrapper = styled.div`
   width: 700px;
@@ -20,11 +21,32 @@ const Wrapper = styled.div`
   background-color: rgba(0, 0, 0, 0.4);
   border-radius: 4px;
 `;
+const TitleWrapper = styled.div`
+  width: max-content;
+  display: flex;
+  align-items: center;
+  margin: 0 0 15px 0;
+`;
 const Title = styled.h2`
   font-size: 34px;
   color: white;
   font-weight: 300;
-  margin: 0 0 15px 0;
+  margin: 0;
+`;
+const Add = styled(AddIcon)`
+  width: 32px;
+  height: 32px;
+  margin-left: 8px;
+  cursor: pointer;
+  & > path {
+    transition: all 0.3s linear;
+  }
+  &:hover {
+    & > path {
+      stroke: #ebebf0;
+      transition: all 0.3s linear;
+    }
+  }
 `;
 const InputsWrapper = styled.div`
   width: 100%;
@@ -40,7 +62,7 @@ const ButtonWrapper = styled.div`
 `;
 
 export const ChooseRoute = () => {
-  const [data, setData] = useState({
+  const [data, setData] = useState<any>({
     originCity: { inputValue: "", lat: 0, lng: 0 },
     intermediateCities: [],
     destinationCity: { inputValue: "", lat: 0, lng: 0 },
@@ -50,11 +72,16 @@ export const ChooseRoute = () => {
   const [isLoadingInProcess, setIsLoadingInProcess] = useState(false);
   const [isOpenDateModal, setIsOpenDateModal] = useState(false);
   const [validatingIsStarted, setValidatingIsStarted] = useState(false);
+  const [intermediateInputValue, setIntermediateInputValue] = useState("");
   const isAllFieldsValid =
     data.originCity.inputValue.length > 0 &&
     data.destinationCity.inputValue.length > 0 &&
     data.date.length > 0 &&
     data.numberOfPassengers > 0;
+  const intermediateCitiesList = useGetCities(
+    intermediateInputValue,
+    setIsLoadingInProcess
+  );
 
   const inputOnChange = useCallback(
     (
@@ -105,6 +132,53 @@ export const ChooseRoute = () => {
       console.log("data: ", data);
     }
   };
+  const addIntermidiateCity = () => {
+    const preparedCities = [
+      ...data.intermediateCities,
+      { inputValue: "", lat: 0, lng: 0 },
+    ];
+    setData({ ...data, intermediateCities: preparedCities });
+  };
+  const preparedIntermediateCitiesArr =
+    data.intermediateCities.length === 0
+      ? []
+      : data.intermediateCities.map((city: any, index: number) => ({
+          val: { ...city },
+          onChange: (value: string) => {
+            setIntermediateInputValue(value);
+            setData({
+              ...data,
+              intermediateCities: data.intermediateCities.map(
+                (item: any, i: number) =>
+                  i === index ? { ...item, inputValue: value } : item
+              ),
+            });
+          },
+          setCoordinates: (city: CityType) => {
+            const i = data.intermediateCities.length - 1;
+            const { name, lat, lng } = city;
+            setData({
+              ...data,
+              intermediateCities: data.intermediateCities.map(
+                (item: any, i: number) =>
+                  i === index ? { inputValue: name, lat, lng } : item
+              ),
+            });
+          },
+          removeCity: () => {
+            setData({
+              ...data,
+              intermediateCities: data.intermediateCities.filter(
+                (item: any, i: number) => i !== index
+              ),
+            });
+          },
+          cities: intermediateCitiesList,
+          label: "Intermediate city",
+          fieldName: "intermediateCities",
+          placeholder: "Choose a city",
+          icon: () => <LocationIcon />,
+        }));
   const inputsList = [
     {
       val: { ...data.originCity },
@@ -118,7 +192,7 @@ export const ChooseRoute = () => {
       placeholder: "Choose a city",
       icon: () => <LocationIcon />,
     },
-    ...data.intermediateCities,
+    ...preparedIntermediateCitiesArr,
     {
       val: data.destinationCity,
       onChange: (value: string) => {
@@ -156,7 +230,10 @@ export const ChooseRoute = () => {
 
   return (
     <Wrapper>
-      <Title>Choose a route</Title>
+      <TitleWrapper>
+        <Title>Choose a route</Title>
+        <Add onClick={addIntermidiateCity} />
+      </TitleWrapper>
       <InputsWrapper>
         {inputsList.map((item: any, index: number) => {
           const {
@@ -169,6 +246,7 @@ export const ChooseRoute = () => {
             placeholder,
             icon,
             cities,
+            removeCity,
           } = item;
 
           return (
@@ -191,6 +269,7 @@ export const ChooseRoute = () => {
                 setCoordinates(city, fieldName);
               }}
               setValidatingIsStarted={setValidatingIsStarted}
+              removeCity={removeCity}
             />
           );
         })}
