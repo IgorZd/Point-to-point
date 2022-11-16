@@ -1,11 +1,12 @@
-import React from "react";
+import React, { useEffect } from "react";
 
 import { withRouter } from "react-router-dom";
 import { PATHS } from "../routes/paths";
 
 const DefaultPage = ({ history }: { history: any }) => {
-  history.push(PATHS.MAIN);
-
+  useEffect(() => {
+    history.push(PATHS.MAIN);
+  }, []);
   return <></>;
 };
 

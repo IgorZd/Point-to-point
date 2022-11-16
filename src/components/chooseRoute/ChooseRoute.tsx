@@ -1,6 +1,6 @@
 // @ts-ignore
 import styled from "@xstyled/styled-components";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useState } from "react";
 import { Input } from "../input/Input";
 import { ReactComponent as LocationIcon } from "../../assets/Location.svg";
 import { ReactComponent as DateIcon } from "../../assets/Calendar.svg";
@@ -10,6 +10,9 @@ import { getRequiredDateFormat } from "../../utils/date-format";
 import { DateModal } from "../dateModal/DateModal";
 import { CommonButton } from "../CommonButton/CommonButton";
 import { ReactComponent as AddIcon } from "../../assets/Add.svg";
+import { media } from "../../styles/media";
+import { useCustomHistory } from "../../utils/react-router-dom-abstraction";
+import { View } from "../../routes";
 
 const Wrapper = styled.div`
   width: 700px;
@@ -17,15 +20,23 @@ const Wrapper = styled.div`
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  padding: 15px;
+  padding: 5px;
   background-color: rgba(0, 0, 0, 0.4);
   border-radius: 4px;
+  ${media.tablet`
+    width: 100%;
+  `}
 `;
 const TitleWrapper = styled.div`
   width: max-content;
+  box-sizing: border-box;
   display: flex;
   align-items: center;
-  margin: 0 0 15px 0;
+  margin: 0 0 5px 0;
+  padding: 0 10px;
+  ${media.tablet`
+    width: 100%;
+  `}
 `;
 const Title = styled.h2`
   font-size: 34px;
@@ -50,18 +61,33 @@ const Add = styled(AddIcon)`
 `;
 const InputsWrapper = styled.div`
   width: 100%;
+  max-height: 515px;
+  box-sizing: border-box;
   display: flex;
   flex-wrap: wrap;
   gap: 10px;
+  overflow-y: auto;
+  padding: 10px;
+  ${media.tablet`
+    flex-direction: column;
+    flex-wrap: nowrap;
+    max-height: 505px;
+  `}
 `;
 const ButtonWrapper = styled.div`
   width: 100%;
+  box-sizing: border-box;
   display: flex;
   justify-content: flex-end;
-  margin-top: 10px;
+  padding: 0 10px;
+  ${media.tablet`
+    & > button {
+      width: 100%;
+    }
+  `};
 `;
 
-export const ChooseRoute = () => {
+export const ChooseRoute = ({ pathParams }: { pathParams: any }) => {
   const [data, setData] = useState<any>({
     originCity: { inputValue: "", lat: 0, lng: 0 },
     intermediateCities: [],
@@ -71,17 +97,22 @@ export const ChooseRoute = () => {
   });
   const [isLoadingInProcess, setIsLoadingInProcess] = useState(false);
   const [isOpenDateModal, setIsOpenDateModal] = useState(false);
-  const [validatingIsStarted, setValidatingIsStarted] = useState(false);
   const [intermediateInputValue, setIntermediateInputValue] = useState("");
+  const isIntermediateCitiesValid =
+    data.intermediateCities.length ===
+    data.intermediateCities.filter((item: any) => item.inputValue.length > 0)
+      .length;
   const isAllFieldsValid =
     data.originCity.inputValue.length > 0 &&
     data.destinationCity.inputValue.length > 0 &&
     data.date.length > 0 &&
-    data.numberOfPassengers > 0;
+    data.numberOfPassengers > 0 &&
+    isIntermediateCitiesValid;
   const intermediateCitiesList = useGetCities(
     intermediateInputValue,
     setIsLoadingInProcess
   );
+  const history = useCustomHistory();
 
   const inputOnChange = useCallback(
     (
@@ -103,16 +134,16 @@ export const ChooseRoute = () => {
     },
     [data]
   );
-  const setCoordinates = (
-    city: CityType,
-    fieldName: "originCity" | "destinationCity"
-  ) => {
-    const { name, lat, lng } = city;
-    setData({
-      ...data,
-      [`${fieldName}`]: { inputValue: name, lat, lng },
-    });
-  };
+  const setCoordinates = useCallback(
+    (city: CityType, fieldName: "originCity" | "destinationCity") => {
+      const { name, lat, lng } = city;
+      setData({
+        ...data,
+        [`${fieldName}`]: { inputValue: name, lat, lng },
+      });
+    },
+    [data]
+  );
   const setDate = (date: string) => {
     setData({ ...data, date });
   };
@@ -127,9 +158,19 @@ export const ChooseRoute = () => {
     setData({ ...data, numberOfPassengers: value });
   };
   const searchOnClick = () => {
-    setValidatingIsStarted(true);
     if (isAllFieldsValid) {
-      console.log("data: ", data);
+      const prepInterm = data.intermediateCities
+        .map((item: any) => item.inputValue)
+        .join(",");
+      history.push(View.DESTINATION, {
+        pathParams: {
+          originCity: data.originCity.inputValue,
+          destinationCity: data.destinationCity.inputValue,
+          intermediateCities: prepInterm,
+          date: data.date,
+          numberOfPassengers: data.numberOfPassengers,
+        },
+      });
     }
   };
   const addIntermidiateCity = () => {
@@ -155,7 +196,6 @@ export const ChooseRoute = () => {
             });
           },
           setCoordinates: (city: CityType) => {
-            const i = data.intermediateCities.length - 1;
             const { name, lat, lng } = city;
             setData({
               ...data,
@@ -264,11 +304,9 @@ export const ChooseRoute = () => {
               icon={icon}
               searchedList={cities}
               isLoadingInProcess={isLoadingInProcess}
-              validatingIsStarted={validatingIsStarted}
               setCoordinates={(city: CityType) => {
                 setCoordinates(city, fieldName);
               }}
-              setValidatingIsStarted={setValidatingIsStarted}
               removeCity={removeCity}
             />
           );
@@ -282,6 +320,7 @@ export const ChooseRoute = () => {
           onClick={searchOnClick}
           backgroundColor={"rgb(246, 185, 0)"}
           backgroundColorHover={"rgb(211, 158, 0)"}
+          disabled={!isAllFieldsValid}
         />
       </ButtonWrapper>
       <DateModal

@@ -17,6 +17,10 @@ const Button = styled.button`
     background-color: ${(props: any) =>
       props.backgroundColorHover ? props.backgroundColorHover : "#216ba5"};
   }
+  &.disabled {
+    opacity: 0.8;
+    pointer-events: none;
+  }
 `;
 
 export const CommonButton = ({
@@ -28,6 +32,8 @@ export const CommonButton = ({
   hoverColor,
   backgroundColor,
   backgroundColorHover,
+  disabled,
+  className,
 }: {
   value: string;
   onClick: () => void;
@@ -37,6 +43,8 @@ export const CommonButton = ({
   hoverColor?: string;
   backgroundColor?: string;
   backgroundColorHover?: string;
+  disabled?: boolean;
+  className?: string;
 }) => {
   return (
     <Button
@@ -47,6 +55,7 @@ export const CommonButton = ({
       hoverColor={hoverColor}
       backgroundColor={backgroundColor}
       backgroundColorHover={backgroundColorHover}
+      className={`${disabled ? `disabled` : ""} ${className}`}
     >
       {value}
     </Button>

@@ -2,6 +2,7 @@
 import styled from "@xstyled/styled-components";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { CityType } from "../../api/cities";
+import { media } from "../../styles/media";
 import { Container } from "./components/container/Container";
 import { SearchedList } from "./components/searchedList/SearchedList";
 
@@ -11,6 +12,9 @@ const Wrapper = styled.div`
   flex-direction: column;
   border-radius: 4px;
   position: relative;
+  ${media.tablet`
+    width: 100%;
+  `}
 `;
 const ErrorMessageWrapper = styled.div`
   padding: 7px 8px;
@@ -54,11 +58,9 @@ export const Input = ({
   placeholder,
   icon,
   setCoordinates,
-  setValidatingIsStarted,
   removeCity,
   searchedList,
   isLoadingInProcess,
-  validatingIsStarted,
 }: {
   value: string;
   onChange: (value: string | number) => void;
@@ -67,14 +69,13 @@ export const Input = ({
   placeholder: string;
   icon: any;
   setCoordinates: (city: CityType) => void;
-  setValidatingIsStarted: React.Dispatch<React.SetStateAction<boolean>>;
   removeCity: () => void;
   searchedList?: CityType[];
-  validatingIsStarted?: boolean;
   isLoadingInProcess?: boolean;
 }) => {
   const [isFocused, setIsFocused] = useState(false);
   const [isOpenSearchList, setIsOpenSearchList] = useState(false);
+  const [validatingIsStarted, setValidatingIsStarted] = useState(false);
   const inputRef = useRef<any>(null);
   const withSearchList = searchedList && searchedList.length > 0;
   const isTextInput =

@@ -14,10 +14,12 @@ export const Wrapper = styled.div`
   background-size: cover;
 `;
 
-export const Main = () => {
+export const Main = ({ match }: { match: any }) => {
+  const pathParams = match.params;
+
   return (
     <Wrapper background={background}>
-      <ChooseRoute />
+      <ChooseRoute pathParams={pathParams} />
     </Wrapper>
   );
 };

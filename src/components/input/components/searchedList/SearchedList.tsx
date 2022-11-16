@@ -5,7 +5,7 @@ import { CityType } from "../../../../api/cities";
 const Wrapper = styled.ul`
   width: 100%;
   box-sizing: border-box;
-  max-height: 182px;
+  max-height: 74px;
   overflow-y: auto;
   display: flex;
   flex-direction: column;

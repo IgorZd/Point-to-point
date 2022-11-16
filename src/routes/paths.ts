@@ -1,10 +1,16 @@
 import { CombinedRoutes, View } from "./routeInterfaces";
 
 export const MAPPING = Object.freeze({
-  [View.DESTINATION]: { path: "/destination" },
-  [View.MAIN]: { path: "/" },
+  [View.MAIN]: {
+    path: "/main",
+  },
+  [View.DESTINATION]: {
+    path: "/destination/:originCity/:intermediateCities/:destinationCity/:date/:numberOfPassengers",
+  },
+  [View.REDIRECT]: {
+    path: "/",
+  },
 }) as CombinedRoutes;
-
 export const getPath = (view: typeof View[keyof typeof View]) =>
   MAPPING[view] ? MAPPING[view].path : "";
 
