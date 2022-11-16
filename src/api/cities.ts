@@ -29,7 +29,7 @@ const cities = [
   { name: "Aix-en-Provence", lat: 43.529742, lng: 5.447427 },
 ];
 
-export const useGetCities = (
+export const useGetCitiesByKeyWord = (
   value: string,
   setIsLoadingInProcess: React.Dispatch<React.SetStateAction<boolean>>
 ) => {
@@ -52,4 +52,8 @@ export const useGetCities = (
   }, [setIsLoadingInProcess, value]);
 
   return localData;
+};
+
+export const useGetCities = () => {
+  return cities;
 };

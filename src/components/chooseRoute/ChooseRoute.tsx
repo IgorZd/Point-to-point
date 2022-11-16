@@ -5,7 +5,7 @@ import { Input } from "../input/Input";
 import { ReactComponent as LocationIcon } from "../../assets/Location.svg";
 import { ReactComponent as DateIcon } from "../../assets/Calendar.svg";
 import { ReactComponent as PersonIcon } from "../../assets/user.svg";
-import { CityType, useGetCities } from "../../api/cities";
+import { CityType, useGetCitiesByKeyWord } from "../../api/cities";
 import { getRequiredDateFormat } from "../../utils/date-format";
 import { DateModal } from "../dateModal/DateModal";
 import { CommonButton } from "../CommonButton/CommonButton";
@@ -87,7 +87,7 @@ const ButtonWrapper = styled.div`
   `};
 `;
 
-export const ChooseRoute = ({ pathParams }: { pathParams: any }) => {
+export const ChooseRoute = () => {
   const [data, setData] = useState<any>({
     originCity: { inputValue: "", lat: 0, lng: 0 },
     intermediateCities: [],
@@ -108,7 +108,7 @@ export const ChooseRoute = ({ pathParams }: { pathParams: any }) => {
     data.date.length > 0 &&
     data.numberOfPassengers > 0 &&
     isIntermediateCitiesValid;
-  const intermediateCitiesList = useGetCities(
+  const intermediateCitiesList = useGetCitiesByKeyWord(
     intermediateInputValue,
     setIsLoadingInProcess
   );
@@ -166,7 +166,7 @@ export const ChooseRoute = ({ pathParams }: { pathParams: any }) => {
         pathParams: {
           originCity: data.originCity.inputValue,
           destinationCity: data.destinationCity.inputValue,
-          intermediateCities: prepInterm,
+          intermediateCities: prepInterm.length > 0 ? prepInterm : "no",
           date: data.date,
           numberOfPassengers: data.numberOfPassengers,
         },
@@ -226,7 +226,10 @@ export const ChooseRoute = ({ pathParams }: { pathParams: any }) => {
         inputOnChange(value, "originCity");
       },
       setCoordinates,
-      cities: useGetCities(data.originCity.inputValue, setIsLoadingInProcess),
+      cities: useGetCitiesByKeyWord(
+        data.originCity.inputValue,
+        setIsLoadingInProcess
+      ),
       label: "Origin city",
       fieldName: "originCity",
       placeholder: "Choose a city",
@@ -239,7 +242,7 @@ export const ChooseRoute = ({ pathParams }: { pathParams: any }) => {
         inputOnChange(value, "destinationCity");
       },
       setCoordinates,
-      cities: useGetCities(
+      cities: useGetCitiesByKeyWord(
         data.destinationCity.inputValue,
         setIsLoadingInProcess
       ),
